@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//OpenMRS//DTD OpenMRS Config 1.0//EN"
+        "http://resources.openmrs.org/doctype/config-1.2.dtd">
+
+<module configVersion="1.2">
+
+    <properties>
+        <MODULE_ID>bahmnicommons</MODULE_ID>
+        <MODULE_NAME>${project.name}</MODULE_NAME>
+        <MODULE_VERSION>${project.version}</MODULE_VERSION>
+        <MODULE_PACKAGE>${project.groupId}.${MODULE_ID}</MODULE_PACKAGE>
+    </properties>
+    <!-- Module Properties -->
+    <id>dashboard_module</id>
+    <name>Dashboard Module</name>
+    <version>0.1-SNAPSHOT</version>
+    <package>org.openmrs.module.dashboard</package>
+    <author>None</author>
+    <description>
+        An openmrs dashboard module
+    </description>
+    <activator>org.openmrs.module.dashboard.DashboardActivator</activator>
+
+
+
+    <require_version>${openMRSRuntimeVersion}</require_version>
+    <!-- Required Modules -->
+    <require_modules>
+        <require_module>org.openmrs.module.webservices.rest</require_module>
+    </require_modules>
+    <!-- / Required Modules -->
+
+    <mappingFiles>
+    </mappingFiles>
+</module>
