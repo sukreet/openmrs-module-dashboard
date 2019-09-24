@@ -1,31 +1,25 @@
 package org.openmrs.module.dashboard.api.model;
 
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import java.util.ArrayList;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DashboardConfig {
-    private String name;
-    private String details;
+
+    @JsonProperty("dashboards")
+    private ArrayList<Dashboard> dashboards;
 
     public DashboardConfig() {
     }
 
-    public DashboardConfig( String name, String details) {
-        this.name = name;
-        this.details = details;
+    public ArrayList<Dashboard> getDashboards() {
+        return dashboards;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
+    public void setDashboards(ArrayList<Dashboard> dashboards) {
+        this.dashboards = dashboards;
     }
 }
