@@ -3,14 +3,16 @@ package org.openmrs.module.dashboard.api.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.openmrs.module.dashboard.api.loader.Config;
-import org.openmrs.module.dashboard.api.model.Dashboard;
+import org.openmrs.module.dashboard.api.loader.ConfigLoader;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.DashboardPrivilege;
+import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -18,28 +20,25 @@ public class DashboardServiceImplTest {
     private DashboardServiceImpl dashboardService;
 
     @Mock
-    private Config mockDashboardConfig;
+    private ConfigLoader mockConfigLoader;
 
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         initMocks(this);
-        this.dashboardService = new DashboardServiceImpl(mockDashboardConfig);
+        this.dashboardService = new DashboardServiceImpl(mockConfigLoader);
     }
 
     @Test
-    public void shouldFindASampleDashboard() {
-//        JSONArray sample = new JSONArray("[{\"name\":\"dashboard name\"}]");
+    public void shouldFindASampleDashboard() throws IOException {
+        DashboardPrivilege privilegeMap = new DashboardPrivilege("dashboard_config", new ArrayList<>(Arrays.asList("provider")));
+        PrivilegesConfig privilegesConfig = new PrivilegesConfig(new ArrayList<>(Arrays.asList(privilegeMap)));
+        when(mockConfigLoader.loadDashboardPrivilegeConfig("dashboard_privilege.json")).thenReturn(privilegesConfig);
+
         DashboardConfig config = new DashboardConfig();
-        Dashboard dashboard = new Dashboard();
-        dashboard.setName("dashboard name");
-        ArrayList<Dashboard> dashboards = new ArrayList<>();
-        dashboards.add(dashboard);
-        config.setDashboards(dashboards);
-        when(mockDashboardConfig.readDashboardConfig("dashboard_config.json")).thenReturn(config);
-
+        config.setDashboards(new ArrayList<>(Arrays.asList("dashboard name")));
+        when(mockConfigLoader.loadDashboardConfig("dashboard_config.json")).thenReturn(config);
         DashboardConfig dashboardConfig = dashboardService.find();
-
-        assertEquals("dashboard name", dashboardConfig.getDashboards().get(0).getName());
+        assertEquals("dashboard name", dashboardConfig.getDashboards().get(0));
     }
 }

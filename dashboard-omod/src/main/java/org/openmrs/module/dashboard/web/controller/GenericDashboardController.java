@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/rest/" + RestConstants.VERSION_1 + "/dashboard")
 public class GenericDashboardController extends BaseRestController {
     private DashboardService dashboardService;
-    private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     public GenericDashboardController(DashboardService dashboardService) {
