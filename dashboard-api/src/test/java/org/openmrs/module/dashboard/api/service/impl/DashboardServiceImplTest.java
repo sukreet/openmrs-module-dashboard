@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.openmrs.module.dashboard.api.loader.ConfigLoader;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
 import org.openmrs.module.dashboard.api.model.DashboardPrivilege;
+import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
 import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 
 import java.io.IOException;
@@ -39,6 +40,26 @@ public class DashboardServiceImplTest {
         config.setDashboards(new ArrayList<>(Arrays.asList("dashboard name")));
         when(mockConfigLoader.loadDashboardConfig("dashboard_config.json")).thenReturn(config);
         DashboardConfig dashboardConfig = dashboardService.find();
+
         assertEquals("dashboard name", dashboardConfig.getDashboards().get(0));
+    }
+
+    @Test
+    public void shouldFindADashboard() throws IOException {
+        DashboardPrivileges dashboardPrivileges = new DashboardPrivileges("[\n" +
+                "   {\n" +
+                "     \"dashboardName\" : \"dashboard_config\",\n" +
+                "     \"requiredPrivileges\" : [\"provider\"]\n" +
+                "   }\n" +
+                " ]");
+
+        when(mockConfigLoader.getDashboardPrivileges()).thenReturn(dashboardPrivileges);
+        ArrayList<String> fileNames = new ArrayList<>(Arrays.asList("dashboard_config"));
+        ArrayList<String> dashboards = new ArrayList<>(Arrays.asList("dashboard one", "dashboard two"));
+        when(mockConfigLoader.readAllFilesFromAppDataDirectory(fileNames)).thenReturn(dashboards);
+
+        ArrayList<String> dashboardConfig = dashboardService.getConfigurationByPrivileges();
+        assertEquals("dashboard one", dashboardConfig.get(0));
+        assertEquals("dashboard two", dashboardConfig.get(1));
     }
 }

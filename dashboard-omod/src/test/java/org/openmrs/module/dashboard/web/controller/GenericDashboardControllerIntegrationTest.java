@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
@@ -40,7 +38,6 @@ public class GenericDashboardControllerIntegrationTest extends BaseModuleWebCont
     }
 
     @Test
-    @Ignore
     public void shouldFindDashboard() throws Exception {
         String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
         File privilegeFile = new File(applicationDataDirectory, "dashboard_privilege.json");
@@ -66,13 +63,10 @@ public class GenericDashboardControllerIntegrationTest extends BaseModuleWebCont
         String content = result.getResponse().getContentAsString();
         DashboardConfig config = new ObjectMapper().readValue(content, DashboardConfig.class);
         Assert.assertEquals("{name=test dashboard}", config.getDashboards().get(0).toString());
-//        assertEquals(2, config.getDashboards().get(0).getSections().size());
     }
-
 
     @Test
     public void shouldReturnDashboardConfiguration() throws Exception {
-        Context.getAdministrationService().getGlobalProperty("");
         String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
         File privilegeFile = new File(applicationDataDirectory, "dashboard_privileges.json");
         privilegeFile.deleteOnExit();
@@ -94,7 +88,7 @@ public class GenericDashboardControllerIntegrationTest extends BaseModuleWebCont
 
         String content = result.getResponse().getContentAsString();
 //        DashboardConfig config = new ObjectMapper().readValue(content, DashboardConfig.class);
-        Assert.assertEquals("Sample Config", content);
+        Assert.assertEquals("[\"{\\\"name\\\": \\\"test dashboard\\\"}\"]", content);
 //        assertEquals(2, config.getDashboards().get(0).getSections().size());
     }
 }

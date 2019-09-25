@@ -4,27 +4,35 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.api.context.Context;
+import org.mockito.Mock;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
 import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
-import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ConfigLoaderTest {
     private ConfigLoader configLoader;
     private static final String PRIVILEGES_CONFIG_FILE_NAME = "dashboard_privileges.json";
-    ;
+
+    @Mock
+    private AdministrationService mockAdministrationService;
 
     @Before
     public void setUp() throws Exception {
-        configLoader = new ConfigLoader();
+        initMocks(this);
+        configLoader = new ConfigLoader(mockAdministrationService);
     }
 
     @Test(expected = Test.None.class)
@@ -45,35 +53,85 @@ public class ConfigLoaderTest {
         assertNotNull(dashboardConfig.getDashboards().get(0));
     }
 
+
     @Test(expected = Test.None.class)
     public void shouldReadPrivilegeConfig() throws Exception {
         String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
         File privilegeFile = new File(applicationDataDirectory, PRIVILEGES_CONFIG_FILE_NAME);
-
-        FileUtils.writeStringToFile(privilegeFile, "{\n" +
+        FileUtils.writeStringToFile(privilegeFile, "[\n" +
+                "   {\n" +
                 "     \"dashboardName\" : \"dashboard_config\",\n" +
                 "     \"requiredPrivileges\" : [\"provider\"]\n" +
                 "   }\n" +
-                " ]\n");
-
+                " ]");
         privilegeFile.deleteOnExit();
+
+        when(mockAdministrationService.getGlobalProperty(anyString())).thenReturn(null);
         DashboardPrivileges dashboardPrivileges = configLoader.getDashboardPrivileges();
+
         assertNotNull(dashboardPrivileges);
         assertEquals(1, dashboardPrivileges.getDashboardPrivileges().size());
     }
 
     @Test(expected = JsonParseException.class)
-    public void shouldThrowExceptionIfPrivilegeConfigIsNotInValidFormat() throws IOException {
+    public void shouldThrowExceptionIfPrivilegeConfigIsNotInValidFormat() throws Exception {
         String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
-        File privilegeFile = new File(applicationDataDirectory, "dashboard_privilege.json");
+        File privilegeFile = new File(applicationDataDirectory, "dashboard_privileges.json");
         FileUtils.writeStringToFile(privilegeFile, "some content");
-        privilegeFile.deleteOnExit();
 
-        PrivilegesConfig privilegesConfig = configLoader.loadDashboardPrivilegeConfig("dashboard_privilege.json");
+        when(mockAdministrationService.getGlobalProperty(anyString())).thenReturn(null);
+
+        privilegeFile.deleteOnExit();
+        configLoader.getDashboardPrivileges();
     }
 
     @Test(expected = FileNotFoundException.class)
-    public void shouldThrowExceptionIfPrivilegeConfigFileIsMissing() throws IOException {
-        configLoader.loadDashboardPrivilegeConfig("dashboard_privilege_missing.json");
+    public void shouldThrowExceptionIfPrivilegeConfigFileIsMissing() throws Exception {
+        String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
+        File privilegeFile = new File(applicationDataDirectory, "dashboard_privileges.json");
+
+        privilegeFile.delete();
+        configLoader.getDashboardPrivileges();
+    }
+
+    @Test(expected = Test.None.class)
+    public void shouldReadAllFilesFromAppDataDir() throws IOException {
+        String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
+
+        File dashboardOne = new File(applicationDataDirectory, "dashboard_one.json");
+        FileUtils.writeStringToFile(dashboardOne, "{\"name\": \"test dashboard\"}");
+        dashboardOne.deleteOnExit();
+
+        File dashboardTwo = new File(applicationDataDirectory, "dashboard_two.json");
+        FileUtils.writeStringToFile(dashboardTwo, "{\"name\": \"test dashboard two\"}");
+        dashboardTwo.deleteOnExit();
+
+        ArrayList<String> dashboardNames = new ArrayList<>(Arrays.asList("dashboard_one", "dashboard_two"));
+        ArrayList<String> dashboards = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
+
+        assertNotNull(dashboards);
+        assertEquals(2, dashboards.size());
+        assertEquals("{\"name\": \"test dashboard\"}", dashboards.get(0));
+        assertEquals("{\"name\": \"test dashboard two\"}", dashboards.get(1));
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void shouldThrowExceptionIfAnyFileIsMissingInAppDataDir() throws IOException {
+        String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
+
+        File dashboardOne = new File(applicationDataDirectory, "dashboard_one.json");
+        FileUtils.writeStringToFile(dashboardOne, "{\"name\": \"test dashboard\"}");
+        dashboardOne.deleteOnExit();
+
+        ArrayList<String> dashboardNames = new ArrayList<>(Arrays.asList("dashboard_one", "dashboard_two"));
+        configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
+    }
+
+    @Test
+    public void shouldReturnEmptyListIfNoFileNamesArePassed() throws IOException {
+        ArrayList<String> dashboardNames = new ArrayList<>();
+        ArrayList<String> strings = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
+
+        assertEquals(0, strings.size());
     }
 }

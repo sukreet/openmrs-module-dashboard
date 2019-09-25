@@ -4,26 +4,21 @@ package org.openmrs.module.dashboard.api.model;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class DashboardPrivileges {
     private ArrayList<DashboardPrivilege> dashboardPrivileges;
 
-    public DashboardPrivileges(String dashboardPrivilegesFileContent) throws Exception {
+    public DashboardPrivileges(String dashboardPrivilegesFileContent) throws IOException {
         this.dashboardPrivileges = fromJSON(new TypeReference<ArrayList<DashboardPrivilege>>() {
         }, dashboardPrivilegesFileContent);
     }
 
     public static <T> T fromJSON(final TypeReference<T> type,
-                                 final String jsonPacket) throws Exception {
-        T data = null;
-        try {
-            data = new ObjectMapper().readValue(jsonPacket, type);
-        } catch (Exception e) {
-            throw new Exception("Privileges file do not have expected format.");
-        }
-        return data;
+                                 final String jsonPacket) throws IOException {
+        return new ObjectMapper().readValue(jsonPacket, type);
     }
 
     public ArrayList<DashboardPrivilege> getDashboardPrivileges() {
