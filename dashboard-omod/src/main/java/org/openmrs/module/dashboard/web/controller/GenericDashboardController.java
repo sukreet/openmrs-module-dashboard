@@ -30,4 +30,11 @@ public class GenericDashboardController extends BaseRestController {
         DashboardConfig config = dashboardService.find();
         return new ResponseEntity<>(config, HttpStatus.OK);
     }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/configuration")
+    @ResponseBody
+    public ResponseEntity<String> getConfigurationByPrivileges() {
+        String dashboardConfiguration = dashboardService.getConfigurationByPrivileges();
+        return new ResponseEntity<>(dashboardConfiguration, HttpStatus.OK);
+    }
 }

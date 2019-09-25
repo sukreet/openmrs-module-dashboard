@@ -2,6 +2,7 @@ package org.openmrs.module.dashboard.api.model;
 
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,7 +12,7 @@ public class PrivilegesConfigTest {
 
 
     @Test
-    public void shouldGetPrivilegesForADashboard() {
+    public void shouldGetPrivilegesForADashboard() throws IOException {
 
         DashboardPrivilege privilegeMapOne = new DashboardPrivilege("dashboard_one", new ArrayList<>(Arrays.asList("p1", "p2")));
         DashboardPrivilege privilegeMapTwo = new DashboardPrivilege("dashboard_two", new ArrayList<>(Arrays.asList("p3", "p4")));

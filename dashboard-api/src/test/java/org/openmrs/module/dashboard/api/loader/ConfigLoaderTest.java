@@ -4,7 +4,9 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
 import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -16,8 +18,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ConfigLoaderTest {
-
     private ConfigLoader configLoader;
+    private static final String PRIVILEGES_CONFIG_FILE_NAME = "dashboard_privileges.json";
+    ;
 
     @Before
     public void setUp() throws Exception {
@@ -43,24 +46,20 @@ public class ConfigLoaderTest {
     }
 
     @Test(expected = Test.None.class)
-    public void shouldReadPrivilegeConfig() throws IOException {
+    public void shouldReadPrivilegeConfig() throws Exception {
         String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
-        File privilegeFile = new File(applicationDataDirectory, "dashboard_privilege.json");
+        File privilegeFile = new File(applicationDataDirectory, PRIVILEGES_CONFIG_FILE_NAME);
 
         FileUtils.writeStringToFile(privilegeFile, "{\n" +
-                " \"dashboardPrivileges\" :[\n" +
-                "   {\n" +
                 "     \"dashboardName\" : \"dashboard_config\",\n" +
                 "     \"requiredPrivileges\" : [\"provider\"]\n" +
                 "   }\n" +
-                " ]\n" +
-                "}");
+                " ]\n");
 
         privilegeFile.deleteOnExit();
-
-        PrivilegesConfig privilegesConfig = configLoader.loadDashboardPrivilegeConfig("dashboard_privilege.json");
-        assertNotNull(privilegesConfig);
-        assertEquals(1, privilegesConfig.getDashboardPrivileges().size());
+        DashboardPrivileges dashboardPrivileges = configLoader.getDashboardPrivileges();
+        assertNotNull(dashboardPrivileges);
+        assertEquals(1, dashboardPrivileges.getDashboardPrivileges().size());
     }
 
     @Test(expected = JsonParseException.class)

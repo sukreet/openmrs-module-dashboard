@@ -34,8 +34,7 @@ public class DashboardPrivilege {
         this.requiredPrivileges = requiredPrivileges;
     }
 
-    public boolean isDashboardApplicable(ArrayList<String> userPriviledges) {
-        return !CollectionUtils.intersection(userPriviledges, this.requiredPrivileges).isEmpty();
-
+    public boolean isDashboardApplicable(ArrayList<String> userPrivileges) {
+        return !CollectionUtils.intersection(userPrivileges, this.requiredPrivileges).isEmpty();
     }
 }

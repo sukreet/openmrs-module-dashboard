@@ -1,10 +1,14 @@
 package org.openmrs.module.dashboard.api.loader;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
 import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,7 +19,13 @@ import java.util.ArrayList;
 public class ConfigLoader {
 
     private ObjectMapper objectMapper;
+    private  AdministrationService administrationService;
     private String dataDirectory;
+
+    @Autowired
+    public ConfigLoader(AdministrationService administrationService) {
+        this.administrationService = administrationService;
+    }
 
     public ConfigLoader() {
         dataDirectory = OpenmrsUtil.getApplicationDataDirectory();
@@ -23,7 +33,7 @@ public class ConfigLoader {
     }
 
     public DashboardConfig loadDashboardConfig(String fileName) throws IOException {
-        //Todo: get a list of flieNames and do same for each
+        //Todo: get a list of fileNames and do same for each
         ArrayList<Object> dashboards = new ArrayList<>();
         String fileContent = null;
         try {
@@ -51,8 +61,16 @@ public class ConfigLoader {
         return objectMapper.readValue(fileAsString, PrivilegesConfig.class);
     }
 
-    private String readFileFromAppDir(String fileName) throws IOException {
+    public String readFileFromAppDir(String fileName) throws IOException {
         File file = new File(dataDirectory, fileName);
         return OpenmrsUtil.getFileAsString(file);
     }
+
+    public DashboardPrivileges getDashboardPrivileges() throws Exception {
+        String dashboardPrivilegesFileName = administrationService.getGlobalProperty("dashboard.privileges.file");
+        String privilegeFileName = StringUtils.isEmpty(dashboardPrivilegesFileName) ? "dashboard_privileges.json" : dashboardPrivilegesFileName;
+        String dashboardPrivilegesFileContent = readFileFromAppDir(privilegeFileName);
+        return new DashboardPrivileges(dashboardPrivilegesFileContent);
+    }
+
 }
