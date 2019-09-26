@@ -1,11 +1,11 @@
 package org.openmrs.module.dashboard.api.service;
 
-import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.Dashboards;
 
 import java.util.ArrayList;
 
 public interface DashboardService {
-    DashboardConfig find();
+    Dashboards find();
 
-    ArrayList<String> getConfigurationByPrivileges();
+    ArrayList<Object> getConfigurationByPrivileges();
 }

@@ -1,7 +1,7 @@
 package org.openmrs.module.dashboard.api.service.impl;
 
 import org.openmrs.module.dashboard.api.loader.ConfigLoader;
-import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
 import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 import org.openmrs.module.dashboard.api.service.DashboardService;
@@ -26,9 +26,9 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public DashboardConfig find() {
+    public Dashboards find() {
 
-        DashboardConfig dashboardConfig = null;
+        Dashboards dashboardConfig = null;
         try {
             PrivilegesConfig privilegesConfig = configLoader.loadDashboardPrivilegeConfig("dashboard_privilege.json");
             // todo: get logged in user privileges and call the method
@@ -43,8 +43,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public ArrayList<String> getConfigurationByPrivileges() {
-        ArrayList<String> dashboardConfigurations = new ArrayList<>();
+    public ArrayList<Object> getConfigurationByPrivileges() {
+        ArrayList<Object> dashboardConfigurations = new ArrayList<>();
         try {
             DashboardPrivileges dashboardPrivileges = configLoader.getDashboardPrivileges();
             ArrayList<String> currentUserPrivileges = new ArrayList<>(Arrays.asList("provider"));

@@ -1,6 +1,6 @@
 package org.openmrs.module.dashboard.web.controller;
 
-import org.openmrs.module.dashboard.api.model.DashboardConfig;
+import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.module.dashboard.api.service.DashboardService;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.BaseRestController;
@@ -27,18 +27,18 @@ public class GenericDashboardController extends BaseRestController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/config")
     @ResponseBody
-    public ResponseEntity<DashboardConfig> find() {
-        DashboardConfig config = dashboardService.find();
+    public ResponseEntity<Dashboards> find() {
+        Dashboards config = dashboardService.find();
         return new ResponseEntity<>(config, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/configuration", produces = "application/json; charset=utf-8 ")
     @ResponseBody
-    public ResponseEntity<ArrayList> getConfigurationByPrivileges() {
+    public ResponseEntity<ArrayList<Object>> getConfigurationByPrivileges() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add("content-type", "application/json");
 
-        ArrayList<String> dashboardConfigurations = dashboardService.getConfigurationByPrivileges();
+        ArrayList<Object> dashboardConfigurations = dashboardService.getConfigurationByPrivileges();
         return new ResponseEntity<>(dashboardConfigurations, responseHeaders, HttpStatus.OK);
     }
 }

@@ -2,9 +2,8 @@ package org.openmrs.module.dashboard.api.loader;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.dashboard.api.model.DashboardConfig;
 import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
+import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.module.dashboard.api.model.PrivilegesConfig;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.stereotype.Component;
@@ -25,18 +24,18 @@ public class ConfigLoader {
     private String dataDirectory;
 
     public ConfigLoader() {
-        this.administrationService = Context.getAdministrationService();
+//        this.administrationService = Context.getAdministrationService();
         this.objectMapper = new ObjectMapper();
         this.dataDirectory = OpenmrsUtil.getApplicationDataDirectory();
     }
 
     public ConfigLoader(AdministrationService administrationService) {
-        this.administrationService = administrationService;
+//        this.administrationService = administrationService;
         this.objectMapper = new ObjectMapper();
         this.dataDirectory = OpenmrsUtil.getApplicationDataDirectory();
     }
 
-    public DashboardConfig loadDashboardConfig(String fileName) throws IOException {
+    public Dashboards loadDashboardConfig(String fileName) throws IOException {
         //Todo: get a list of fileNames and do same for each
         ArrayList<Object> dashboards = new ArrayList<>();
         String fileContent = null;
@@ -48,7 +47,7 @@ public class ConfigLoader {
             e.printStackTrace();
         }
         dashboards.add(mapDashboardConfig(fileContent));
-        return new DashboardConfig(dashboards);
+        return new Dashboards(dashboards);
     }
 
     public PrivilegesConfig loadDashboardPrivilegeConfig(String fileName) throws IOException {
@@ -71,18 +70,20 @@ public class ConfigLoader {
     }
 
     public DashboardPrivileges getDashboardPrivileges() throws IOException {
-        String dashboardPrivilegesFileName = administrationService.getGlobalProperty("dashboard.privileges.file");
+        String dashboardPrivilegesFileName = null;
+//                administrationService.getGlobalProperty("dashboard.privileges.file");
         String privilegeFileName = StringUtils.isEmpty(dashboardPrivilegesFileName) ? "dashboard_privileges.json" : dashboardPrivilegesFileName;
         String dashboardPrivilegesFileContent = readFileFromAppDir(privilegeFileName);
         return new DashboardPrivileges(dashboardPrivilegesFileContent);
     }
 
-    public ArrayList<String> readAllFilesFromAppDataDirectory(ArrayList<String> dashboardNames) throws IOException {
+    public ArrayList<Object> readAllFilesFromAppDataDirectory(ArrayList<String> dashboardNames) throws IOException {
 
-        ArrayList<String> dashboards = new ArrayList<>();
-
+        ArrayList<Object> dashboards = new ArrayList<>();
         for (String dashboardName : dashboardNames) {
-            dashboards.add(readFileFromAppDir(dashboardName + ".json"));
+            String fileContent = readFileFromAppDir(dashboardName + ".json");
+            Object dashboard = objectMapper.readValue(fileContent, Object.class);
+            dashboards.add(dashboard);
         }
         return dashboards;
     }

@@ -6,15 +6,15 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DashboardConfig {
+public class Dashboards {
 
     private ArrayList<Object> dashboards;
 
-    public DashboardConfig(ArrayList<Object> dashboards) {
+    public Dashboards(ArrayList<Object> dashboards) {
         this.dashboards = dashboards;
     }
 
-    public DashboardConfig() {
+    public Dashboards() {
 
     }
 
@@ -24,5 +24,9 @@ public class DashboardConfig {
 
     public void setDashboards(ArrayList<Object> dashboards) {
         this.dashboards = dashboards;
+    }
+
+    public void add(Object o) {
+        this.dashboards.add(o);
     }
 }

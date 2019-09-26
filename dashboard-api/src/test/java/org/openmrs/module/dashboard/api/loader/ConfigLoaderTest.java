@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.module.dashboard.api.model.DashboardConfig;
 import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
+import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class ConfigLoaderTest {
     private AdministrationService mockAdministrationService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp()  {
         initMocks(this);
         configLoader = new ConfigLoader(mockAdministrationService);
     }
@@ -43,13 +43,13 @@ public class ConfigLoaderTest {
         FileUtils.writeStringToFile(configFile, "{\"name\": \"test dashboard\"}");
         configFile.deleteOnExit();
 
-        DashboardConfig dashboardConfig = configLoader.loadDashboardConfig("dashboard_config.json");
+        Dashboards dashboardConfig = configLoader.loadDashboardConfig("dashboard_config.json");
         assertNotNull(dashboardConfig.getDashboards());
     }
 
     @Test(expected = Test.None.class)
     public void shouldNotThrowExceptionIfDashboardConfigFileNotFound() throws IOException {
-        DashboardConfig dashboardConfig = configLoader.loadDashboardConfig("dashboard_config_missing.json");
+        Dashboards dashboardConfig = configLoader.loadDashboardConfig("dashboard_config_missing.json");
         assertNotNull(dashboardConfig.getDashboards().get(0));
     }
 
@@ -107,12 +107,12 @@ public class ConfigLoaderTest {
         dashboardTwo.deleteOnExit();
 
         ArrayList<String> dashboardNames = new ArrayList<>(Arrays.asList("dashboard_one", "dashboard_two"));
-        ArrayList<String> dashboards = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
+        ArrayList<Object> dashboards = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
 
         assertNotNull(dashboards);
         assertEquals(2, dashboards.size());
-        assertEquals("{\"name\": \"test dashboard\"}", dashboards.get(0));
-        assertEquals("{\"name\": \"test dashboard two\"}", dashboards.get(1));
+        assertEquals("{name=test dashboard}", dashboards.get(0).toString());
+        assertEquals("{name=test dashboard two}", dashboards.get(1).toString());
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -130,8 +130,8 @@ public class ConfigLoaderTest {
     @Test
     public void shouldReturnEmptyListIfNoFileNamesArePassed() throws IOException {
         ArrayList<String> dashboardNames = new ArrayList<>();
-        ArrayList<String> strings = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
+        ArrayList<Object> dashboards = configLoader.readAllFilesFromAppDataDirectory(dashboardNames);
 
-        assertEquals(0, strings.size());
+        assertEquals(0, dashboards.size());
     }
 }
