@@ -35,19 +35,8 @@ public class DashboardPrivileges {
                 collect(Collectors.toList());
     }
 
-//    public DashboardPrivileges(ArrayList<DashboardPrivilege> dashboardPrivileges) {
-//        this.dashboardPrivileges = dashboardPrivileges;
-//    }
 
     public void setDashboardPrivileges(ArrayList<DashboardPrivilege> dashboardPrivileges) {
         this.dashboardPrivileges = dashboardPrivileges;
     }
-
-//    public ArrayList<String> getDashboardsFor(ArrayList<String> userPrivileges) {
-//
-//        return (ArrayList<String>) dashboardPrivileges.stream().
-//                filter(d -> d.isDashboardApplicable(userPrivileges)).
-//                map(d -> d.getDashboardName()).
-//                collect(Collectors.toList());
-//    }
 }

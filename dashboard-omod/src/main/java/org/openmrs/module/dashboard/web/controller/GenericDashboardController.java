@@ -1,6 +1,5 @@
 package org.openmrs.module.dashboard.web.controller;
 
-import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.module.dashboard.api.service.DashboardService;
 import org.openmrs.module.webservices.rest.web.RestConstants;
 import org.openmrs.module.webservices.rest.web.v1_0.controller.BaseRestController;
@@ -23,13 +22,6 @@ public class GenericDashboardController extends BaseRestController {
     @Autowired
     public GenericDashboardController(DashboardService dashboardService) {
         this.dashboardService = dashboardService;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/config")
-    @ResponseBody
-    public ResponseEntity<Dashboards> find() {
-        Dashboards config = dashboardService.find();
-        return new ResponseEntity<>(config, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/configuration", produces = "application/json; charset=utf-8 ")

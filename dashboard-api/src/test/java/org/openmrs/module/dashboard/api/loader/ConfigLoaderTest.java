@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.module.dashboard.api.model.DashboardPrivileges;
-import org.openmrs.module.dashboard.api.model.Dashboards;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.io.File;
@@ -30,29 +29,10 @@ public class ConfigLoaderTest {
     private AdministrationService mockAdministrationService;
 
     @Before
-    public void setUp()  {
+    public void setUp() {
         initMocks(this);
         configLoader = new ConfigLoader(mockAdministrationService);
     }
-
-    @Test(expected = Test.None.class)
-    public void shouldReadDashboardConfig() throws IOException {
-        String applicationDataDirectory = OpenmrsUtil.getApplicationDataDirectory();
-
-        File configFile = new File(applicationDataDirectory, "dashboard_config.json");
-        FileUtils.writeStringToFile(configFile, "{\"name\": \"test dashboard\"}");
-        configFile.deleteOnExit();
-
-        Dashboards dashboardConfig = configLoader.loadDashboardConfig("dashboard_config.json");
-        assertNotNull(dashboardConfig.getDashboards());
-    }
-
-    @Test(expected = Test.None.class)
-    public void shouldNotThrowExceptionIfDashboardConfigFileNotFound() throws IOException {
-        Dashboards dashboardConfig = configLoader.loadDashboardConfig("dashboard_config_missing.json");
-        assertNotNull(dashboardConfig.getDashboards().get(0));
-    }
-
 
     @Test(expected = Test.None.class)
     public void shouldReadPrivilegeConfig() throws Exception {
